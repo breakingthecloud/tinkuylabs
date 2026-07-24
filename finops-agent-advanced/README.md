@@ -35,7 +35,9 @@ npx tsx src/agent.ts "Why does SOFE flag untagged resources?"
 Agent fetches free models from OpenRouter API at startup — never hardcodes models that may disappear.
 
 ### 2. Budget Guardrails (Sayay)
-$0.50/session limit. Agent warns at 80% spend, blocks at 95%.
+Sayay enforces a **spending limit** per session — this is a safety guardrail, NOT a cost you pay. It prevents runaway agents from burning credits if using paid models. In this demo, the limit is set to $0.50/session as an example.
+
+> **💡 This demo costs $0.** It uses free models from OpenRouter. Sayay's budget guard only activates if you switch to paid models (GPT-4, Claude, etc.).
 
 ### 3. Tool Loop (Tinkuy)
 LLM decides which tools to call, executes them, feeds results back, repeats until answer is ready.
