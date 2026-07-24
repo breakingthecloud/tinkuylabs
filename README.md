@@ -6,7 +6,8 @@ Example agents built with [Tinkuy](https://github.com/breakingthecloud/tinkuy) â
 
 | Example | Description | Tools |
 |---------|-------------|-------|
-| [finops-agent](./finops-agent/) | AWS cost analysis + idle resource detection + remediation commands | 3 |
+| [finops-agent](./finops-agent/) | Basic: AWS cost analysis with simulated data | 3 |
+| [finops-agent-advanced](./finops-agent-advanced/) | Advanced: auto-discovery models, RAG, real API, budget guards | 4 |
 
 ## The Stack
 
