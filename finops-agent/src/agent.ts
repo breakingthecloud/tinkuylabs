@@ -136,6 +136,14 @@ Rules:
   onToolCall: (event) => {
     console.log(`  🔧 ${event.tool}(${JSON.stringify(event.arguments).slice(0, 50)}) → ${event.durationMs}ms${event.error ? ' ❌' : ' ✅'}`);
   },
+  onComplete: (event) => {
+    console.log('\n  🏁 Run complete');
+    console.log(`     Iterations: ${event.iterations}`);
+    console.log(`     Tools used: ${event.toolsUsed.join(', ') || 'none'}`);
+    console.log(`     Models: ${event.modelsUsed.join(', ')}`);
+    console.log(`     Latency: ${event.totalLatencyMs}ms`);
+    if (event.result.blocked) console.log(`     ⚓ BLOCKED: ${event.result.blockReason}`);
+  },
 });
 
 // ─── Run ────────────────────────────────────────────────────────────────

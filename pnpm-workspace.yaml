@@ -1,0 +1,7 @@
+packages:
+  - "finops-agent"
+  - "finops-agent-advanced"
+  - "finops-agent-streaming"
+minimumReleaseAge: 0
+allowBuilds:
+  esbuild: true

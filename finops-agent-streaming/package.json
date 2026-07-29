@@ -1,7 +1,7 @@
 {
-  "name": "finops-agent-advanced",
-  "version": "0.2.0",
-  "description": "Advanced FinOps agent — real API calls, RAG knowledge, auto-discovery models",
+  "name": "finops-agent-streaming",
+  "version": "0.1.0",
+  "description": "Streaming FinOps agent demo with Tinkuy Agent.stream() + AG-UI events",
   "type": "module",
   "scripts": {
     "start": "tsx src/agent.ts",
@@ -9,9 +9,9 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@carloscortezcloud/tinkuy-agent": "^0.4.1",
+    "@carloscortezcloud/sayay-guard": "^0.1.1",
     "@carloscortezcloud/styrr-llm": "^0.4.0",
-    "@carloscortezcloud/sayay-guard": "^0.1.1"
+    "@carloscortezcloud/tinkuy-agent": "^0.4.1"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

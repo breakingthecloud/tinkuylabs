@@ -34,7 +34,7 @@ async function discoverFreeModels(): Promise<{ id: string }[]> {
       .slice(0, 5)
       .map((m: any) => ({ id: m.id }));
 
-    console.log(`  🔍 Discovered ${free.length} free models: ${free.map(m => m.id.split('/')[1]).join(', ')}`);
+    console.log(`  🔍 Discovered ${free.length} free models: ${free.map((m: { id: string }) => m.id.split('/')[1]).join(', ')}`);
     return free;
   } catch {
     console.log('  ⚠️  Discovery failed, using fallback models');
@@ -184,7 +184,7 @@ async function main() {
   // Create agent with all features
   const agent = new Agent({
     router: new StyrRouter({
-      apiKey,
+      apiKey: apiKey!,
       models,
       onFallback: (model, error, next) => {
         console.log(`  ⚠️  ${model.split('/')[1]} failed → trying ${next.split('/')[1]}`);
@@ -209,6 +209,14 @@ Rules:
     },
     onToolCall: (event) => {
       console.log(`  🔧 ${event.tool}() → ${event.durationMs}ms ${event.error ? '❌' : '✅'}`);
+    },
+    onComplete: (event) => {
+      console.log('\n  🏁 Run complete');
+      console.log(`     Iterations: ${event.iterations}`);
+      console.log(`     Tools used: ${event.toolsUsed.join(', ') || 'none'}`);
+      console.log(`     Models: ${event.modelsUsed.join(', ')}`);
+      console.log(`     Latency: ${event.totalLatencyMs}ms`);
+      if (event.result.blocked) console.log(`     ⚓ BLOCKED: ${event.result.blockReason}`);
     },
   });
 

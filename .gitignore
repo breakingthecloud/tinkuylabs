@@ -26,6 +26,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 
-# Lock files (each example manages its own)
+# Old lock files (repo now uses pnpm-lock.yaml at root)
 package-lock.json

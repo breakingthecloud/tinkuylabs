@@ -4,16 +4,17 @@
   "description": "Demo FinOps agent built with Tinkuy + Styrr + Sayay",
   "type": "module",
   "scripts": {
-    "start": "npx tsx src/agent.ts",
-    "build": "tsc"
+    "start": "tsx src/agent.ts",
+    "build": "tsc",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@carloscortezcloud/sayay-guard": "^0.1.0",
-    "@carloscortezcloud/styrr-llm": "^0.1.2",
-    "@carloscortezcloud/tinkuy-agent": "^0.1.0"
+    "@carloscortezcloud/sayay-guard": "^0.1.1",
+    "@carloscortezcloud/styrr-llm": "^0.4.0",
+    "@carloscortezcloud/tinkuy-agent": "^0.4.1"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "tsx": "^4.0.0",
     "typescript": "^5.5.0"
   }
