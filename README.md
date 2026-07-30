@@ -1,5 +1,10 @@
 # 🌊 Tinkuy Labs
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![Tinkuy](https://img.shields.io/badge/Tinkuy-agent%20framework-3B82F6)](https://github.com/breakingthecloud/tinkuy)
+[![Styrr](https://img.shields.io/badge/Styrr-LLM%20router-10B981)](https://github.com/breakingthecloud/styrr)
+[![Sayay](https://img.shields.io/badge/Sayay-cost%20guardrails-F59E0B)](https://github.com/breakingthecloud/sayay)
+
 Example agents built with [Tinkuy](https://github.com/breakingthecloud/tinkuy) — the minimal, provider-agnostic AI agent framework.
 
 ## What's Inside
