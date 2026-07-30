@@ -1,19 +1,58 @@
-# 🌊 Tinkuy Labs
+<p align="center">
+  <img alt="Tinkuy Labs" src="https://img.shields.io/badge/🌊-Tinkuy_Labs-3B82F6?style=for-the-badge" height="50">
+</p>
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
-[![Tinkuy](https://img.shields.io/badge/Tinkuy-agent%20framework-3B82F6)](https://github.com/breakingthecloud/tinkuy)
-[![Styrr](https://img.shields.io/badge/Styrr-LLM%20router-10B981)](https://github.com/breakingthecloud/styrr)
-[![Sayay](https://img.shields.io/badge/Sayay-cost%20guardrails-F59E0B)](https://github.com/breakingthecloud/sayay)
+<p align="center">
+  <b>Example agents built with the Tinkuy ecosystem</b><br>
+  FinOps, streaming, budget control — runnable examples you can use today.
+</p>
 
-Example agents built with [Tinkuy](https://github.com/breakingthecloud/tinkuy) — the minimal, provider-agnostic AI agent framework.
+<p align="center">
+  <a href="#whats-inside">Examples</a>
+  ·
+  <a href="#quick-start">Quick Start</a>
+  ·
+  <a href="#the-stack">The Stack</a>
+  ·
+  <a href="#build-your-own">Build Your Own</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-Apache_2.0-3B82F6?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs">
+  <img src="https://img.shields.io/badge/powered_by-Tinkuy-3B82F6?style=flat-square" alt="Tinkuy">
+  <img src="https://img.shields.io/badge/examples-3-success?style=flat-square" alt="3 examples">
+</p>
+
+---
 
 ## What's Inside
 
 | Example | Description | Features |
 |---------|-------------|----------|
-| [finops-agent](./finops-agent/) | Basic: AWS cost analysis with simulated data | `Agent.run()`, tools, guardrails, `onComplete` hook |
-| [finops-agent-advanced](./finops-agent-advanced/) | Advanced: auto-discovery models, RAG, real API, budget guards | `Agent.run()`, fallback chain, `onComplete` hook |
-| [finops-agent-streaming](./finops-agent-streaming/) | Streaming: `Agent.stream()` with AG-UI events | `text_delta`, `tool_call_result`, `done` |
+| [finops-agent](./finops-agent/) | AWS cost analysis with simulated data | `Agent.run()`, tools, guardrails, `onComplete` hook |
+| [finops-agent-advanced](./finops-agent-advanced/) | Auto-discovery models, RAG, real API, budget guards | `Agent.run()`, fallback chain, `onComplete` hook |
+| [finops-agent-streaming](./finops-agent-streaming/) | `Agent.stream()` with AG-UI events | `text_delta`, `tool_call_result`, `done` |
+
+## Quick Start
+
+```bash
+# Clone and run any example
+git clone https://github.com/breakingthecloud/tinkuylabs.git
+cd tinkuylabs/finops-agent
+pnpm install
+export OPENROUTER_API_KEY=sk-or-...  # Free models available
+pnpm start
+```
+
+From the repo root (pnpm workspace):
+
+```bash
+pnpm install
+pnpm --filter finops-agent start
+pnpm --filter finops-agent-advanced start
+pnpm --filter finops-agent-streaming start
+```
 
 ## The Stack
 
@@ -29,47 +68,24 @@ Each example uses the **Tinkuy ecosystem** — three composable packages:
 └─────────────────────────────────────────────────┘
 ```
 
-- **Tinkuy** — Tool loop engine. Call LLM → parse tool_calls → execute → feed back → repeat.
-- **Styrr** — Multi-model router with automatic fallback (OpenRouter, OpenAI, Bedrock, Ollama).
-- **Sayay** — Budget guardrails. Set daily/monthly limits. Block, warn, or degrade when exceeded.
-
-## Quick Start
-
-```bash
-cd finops-agent
-pnpm install
-export OPENROUTER_API_KEY=sk-or-...  # Free models work!
-pnpm start
-```
-
-All examples use [pnpm](https://pnpm.io) workspaces. From the repo root:
-
-```bash
-pnpm install
-pnpm --filter finops-agent start
-pnpm --filter finops-agent-advanced start
-pnpm --filter finops-agent-streaming start
-```
+| Package | Role |
+|---------|------|
+| **Tinkuy** | Tool loop engine — call LLM → parse tools → execute → repeat |
+| **Styrr** | Multi-model router with automatic fallback |
+| **Sayay** | Budget guardrails — set daily/monthly limits, block/warn/degrade |
 
 ## Get a Free API Key
 
 1. Go to [openrouter.ai](https://openrouter.ai)
 2. Sign up → Keys → Create Key
-3. Free models (no credit card): `nvidia/nemotron-3-super-120b-a12b:free`, `meta-llama/llama-3.3-70b-instruct:free`
+3. Free models (no credit card): `nvidia/nemotron-3-super-120b:free`, `meta-llama/llama-3.3-70b-instruct:free`
 
-## Build Your Own Agent
+## Build Your Own
 
 ```typescript
 import { Agent, defineTool } from '@carloscortezcloud/tinkuy-agent';
 import { StyrRouter } from '@carloscortezcloud/styrr-llm';
 import { SayayGuard, MemoryStorage } from '@carloscortezcloud/sayay-guard';
-
-const myTool = defineTool({
-  name: 'hello',
-  description: 'Says hello to someone',
-  parameters: { type: 'object', properties: { name: { type: 'string' } } },
-  execute: async (args) => `Hello, ${args.name}!`,
-});
 
 const agent = new Agent({
   router: new StyrRouter({
@@ -80,11 +96,11 @@ const agent = new Agent({
     storage: new MemoryStorage(),
     budget: { dailyUsd: 1.0 },
   }),
-  tools: [myTool],
+  tools: [/* your tools */],
   systemPrompt: 'You are a helpful assistant.',
 });
 
-const result = await agent.run('Say hello to Carlos');
+const result = await agent.run('Say hello');
 console.log(result.text);
 ```
 
@@ -94,7 +110,6 @@ Each example uses `onComplete` to print run stats:
 
 ```typescript
 const agent = new Agent({
-  // ... router, tools, guard
   onComplete: (event) => {
     console.log(`Iterations: ${event.iterations}`);
     console.log(`Tools: ${event.toolsUsed.join(', ')}`);
@@ -104,7 +119,7 @@ const agent = new Agent({
 });
 ```
 
-In production, this hook is where you push data to **Qhaway** for cost/latency observability.
+In production, this hook pushes data to **Qhaway** for cost/latency observability.
 
 ## Streaming
 
@@ -118,14 +133,26 @@ for await (const event of agent.stream(prompt)) {
 }
 ```
 
-## Links
+## Ecosystem
 
-- [Tinkuy](https://github.com/breakingthecloud/tinkuy) — Agent framework
-- [Styrr](https://github.com/breakingthecloud/styrr) — LLM router
-- [Sayay](https://github.com/breakingthecloud/sayay) — Cost guardrails
-- [Qhaway](https://github.com/breakingthecloud/qhaway) — Agent observability
-- [npm: @carloscortezcloud](https://www.npmjs.com/~carloscortezcloud)
+| Package | Role |
+|---------|------|
+| [**Tinkuy**](https://github.com/breakingthecloud/tinkuy) | Agent framework |
+| [**Styrr**](https://github.com/breakingthecloud/styrr) | LLM router |
+| [**Sayay**](https://github.com/breakingthecloud/sayay) | Cost guardrails |
+| [**Qhaway**](https://github.com/breakingthecloud/qhaway) | Agent observability |
+| [**TideRAG**](https://github.com/breakingthecloud/tiderag) | Edge RAG pipeline |
 
 ## License
 
-Apache 2.0
+Apache 2.0.
+
+---
+
+<p align="center">
+  <a href="https://github.com/breakingthecloud/tinkuy">Tinkuy</a> ·
+  <a href="https://github.com/breakingthecloud/styrr">Styrr</a> ·
+  <a href="https://github.com/breakingthecloud/sayay">Sayay</a> ·
+  <a href="https://github.com/breakingthecloud/qhaway">Qhaway</a> ·
+  <a href="https://github.com/breakingthecloud/tiderag">TideRAG</a>
+</p>
