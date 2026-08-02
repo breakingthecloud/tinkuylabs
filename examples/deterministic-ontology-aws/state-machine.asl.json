@@ -1,0 +1,58 @@
+{
+  "Comment": "Deterministic Ontology-Driven Architecture for TokenOps using Styrr, Sayay, and Tinkuy",
+  "StartAt": "EvaluateFinancialGuardrail",
+  "States": {
+    "EvaluateFinancialGuardrail": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:sayay-guard-interceptor",
+      "Next": "RouteInferenceLoadBalancer",
+      "Catch": [
+        {
+          "ErrorEquals": ["TokenBudgetExceededException"],
+          "Next": "FinancialKillSwitchTriggered"
+        }
+      ]
+    },
+    "RouteInferenceLoadBalancer": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:styrr-llm-router",
+      "ResultPath": "$.inference_payload",
+      "Next": "ExecuteBedrockStrandsAgent"
+    },
+    "ExecuteBedrockStrandsAgent": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:bedrock-strands-runtime",
+      "Parameters": {
+        "Payload.$": "$.inference_payload"
+      },
+      "ResultPath": "$.raw_agent_response",
+      "Next": "ValidateOntologyWithTinkuy"
+    },
+    "ValidateOntologyWithTinkuy": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:tinkuy-neptune-validator",
+      "Parameters": {
+        "AgentOutput.$": "$.raw_agent_response",
+        "NeptuneEndpoint": "arn:aws:neptune:us-east-1:123456789012:cluster:ontology-core"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["OntologyViolationException"],
+          "Next": "HandleHallucinationError"
+        }
+      ],
+      "End": true
+    },
+    "FinancialKillSwitchTriggered": {
+      "Type": "Fail",
+      "Cause": "Gasto financiero excedido en el Strand actual. Ejecución detenida de forma determinística por sayay-guard.",
+      "Error": "BudgetExceeded"
+    },
+    "HandleHallucinationError": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:123456789012:function:styrr-fallback-escalation",
+      "Comment": "Alucinación detectada por tinkuy. Se escala a un modelo de razonamiento superior en la siguiente iteración.",
+      "Next": "EvaluateFinancialGuardrail"
+    }
+  }
+}

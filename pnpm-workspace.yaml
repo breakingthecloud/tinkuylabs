@@ -2,6 +2,8 @@ packages:
   - "finops-agent"
   - "finops-agent-advanced"
   - "finops-agent-streaming"
+  - "examples/deterministic-ontology-aws/lambdas/*"
+  - "examples/deterministic-ontology-aws/cdk"
 minimumReleaseAge: 0
 allowBuilds:
   esbuild: true

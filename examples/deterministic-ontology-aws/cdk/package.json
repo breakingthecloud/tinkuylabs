@@ -1,0 +1,21 @@
+{
+  "name": "deterministic-ontology-aws-cdk",
+  "version": "1.0.0",
+  "description": "CDK stack wiring Step Functions → 3 Lambdas → DynamoDB → Neptune security group (Tokenops-002)",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "pnpm build && cdk deploy",
+    "diff": "pnpm build && cdk diff"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.150.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^5.5.0"
+  }
+}

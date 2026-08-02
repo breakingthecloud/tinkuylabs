@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" font-family="monospace" font-size="13">
+  <!-- Background -->
+  <rect width="800" height="640" fill="#0b1220" rx="12"/>
+  <text x="400" y="30" fill="#7dd3fc" font-size="18" font-weight="bold" text-anchor="middle">Deterministic Ontology-Driven Architecture (TokenOps-002)</text>
+
+  <!-- Step Functions (The DAG) -->
+  <rect x="250" y="55" width="300" height="56" rx="8" fill="#ff9900" fill-opacity="0.15" stroke="#ff9900" stroke-width="2"/>
+  <text x="400" y="75" fill="#ffb84d" font-weight="bold" text-anchor="middle">AWS STEP FUNCTIONS</text>
+  <text x="400" y="93" fill="#e2e8f0" text-anchor="middle">State orchestration &amp; loop control (DAG)</text>
+  <line x1="400" y1="111" x2="400" y2="130" stroke="#ff9900" stroke-width="2"/>
+
+  <!-- Sayay -->
+  <rect x="250" y="130" width="300" height="52" rx="8" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-width="2"/>
+  <text x="400" y="152" fill="#34d399" font-weight="bold" text-anchor="middle">SAYAY — Financial Guardrails</text>
+  <text x="400" y="170" fill="#e2e8f0" text-anchor="middle">DynamoDB budget check → TokenBudgetExceededException</text>
+  <line x1="400" y1="182" x2="400" y2="200" stroke="#10b981" stroke-width="2"/>
+
+  <!-- Styrr -->
+  <rect x="250" y="200" width="300" height="52" rx="8" fill="#a78bfa" fill-opacity="0.15" stroke="#a78bfa" stroke-width="2"/>
+  <text x="400" y="222" fill="#c4b5fd" font-weight="bold" text-anchor="middle">STYRR — Multi-Model Load Balancer</text>
+  <text x="400" y="240" fill="#e2e8f0" text-anchor="middle">economy (Llama 8B) vs reasoning (Claude Sonnet)</text>
+  <line x1="400" y1="252" x2="400" y2="270" stroke="#a78bfa" stroke-width="2"/>
+
+  <!-- Bedrock -->
+  <rect x="250" y="270" width="300" height="52" rx="8" fill="#ff5c8a" fill-opacity="0.15" stroke="#ff5c8a" stroke-width="2"/>
+  <text x="400" y="292" fill="#ff9ebc" font-weight="bold" text-anchor="middle">BEDROCK AGENTCORE &amp; STRANDS</text>
+  <text x="400" y="310" fill="#e2e8f0" text-anchor="middle">The ONLY probabilistic step (isolated black box)</text>
+  <line x1="400" y1="322" x2="400" y2="340" stroke="#ff5c8a" stroke-width="2"/>
+
+  <!-- Tinkuy -->
+  <rect x="250" y="340" width="300" height="52" rx="8" fill="#3b82f6" fill-opacity="0.15" stroke="#3b82f6" stroke-width="2"/>
+  <text x="400" y="362" fill="#60a5fa" font-weight="bold" text-anchor="middle">TINKUY — Ontology Verification</text>
+  <text x="400" y="380" fill="#e2e8f0" text-anchor="middle">Validate output vs strict T-Box (zero-token)</text>
+
+  <!-- Branch -->
+  <line x1="400" y1="392" x2="400" y2="415" stroke="#3b82f6" stroke-width="2"/>
+  <line x1="400" y1="415" x2="270" y2="415" stroke="#3b82f6" stroke-width="2"/>
+  <line x1="400" y1="415" x2="530" y2="415" stroke="#3b82f6" stroke-width="2"/>
+  <line x1="270" y1="415" x2="270" y2="435" stroke="#10b981" stroke-width="2"/>
+  <line x1="530" y1="415" x2="530" y2="435" stroke="#f87171" stroke-width="2"/>
+
+  <!-- Valid path -->
+  <rect x="120" y="435" width="300" height="56" rx="8" fill="#10b981" fill-opacity="0.12" stroke="#10b981" stroke-width="2"/>
+  <text x="270" y="455" fill="#34d399" font-weight="bold" text-anchor="middle">[CUMPLE ONTOLOGÍA]</text>
+  <text x="270" y="473" fill="#e2e8f0" text-anchor="middle">Compress payload → prompt caching</text>
+
+  <!-- Hallucination path -->
+  <rect x="430" y="435" width="300" height="56" rx="8" fill="#f87171" fill-opacity="0.12" stroke="#f87171" stroke-width="2"/>
+  <text x="580" y="455" fill="#fca5a5" font-weight="bold" text-anchor="middle">[ALUCINACIÓN / ERROR]</text>
+  <text x="580" y="473" fill="#e2e8f0" text-anchor="middle">Kill switch → reasoning tier re-loop</text>
+
+  <!-- Neptune -->
+  <rect x="250" y="530" width="300" height="52" rx="8" fill="#facc15" fill-opacity="0.12" stroke="#facc15" stroke-width="2"/>
+  <text x="400" y="552" fill="#fde047" font-weight="bold" text-anchor="middle">AMAZON NEPTUNE</text>
+  <text x="400" y="570" fill="#e2e8f0" text-anchor="middle">Grounding Ledger — graph referee (SPARQL/Gremlin)</text>
+  <line x1="270" y1="491" x2="270" y2="510" stroke="#10b981" stroke-width="2"/>
+  <line x1="270" y1="510" x2="400" y2="510" stroke="#10b981" stroke-width="2"/>
+  <line x1="400" y1="510" x2="400" y2="530" stroke="#facc15" stroke-width="2"/>
+
+  <text x="400" y="615" fill="#94a3b8" text-anchor="middle" font-size="12">Every state deterministic except the single Bedrock step — the LLM never owns loop control.</text>
+</svg>
