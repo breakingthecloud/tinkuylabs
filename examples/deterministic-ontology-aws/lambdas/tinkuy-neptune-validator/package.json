@@ -11,7 +11,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@carloscortezcloud/tinkuy-agent": "^0.5.0",
+    "@carloscortezcloud/tinkuy-agent": "^0.6.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {

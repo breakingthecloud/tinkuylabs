@@ -66,8 +66,8 @@ importers:
   examples/deterministic-ontology-aws/lambdas/tinkuy-neptune-validator:
     dependencies:
       '@carloscortezcloud/tinkuy-agent':
-        specifier: ^0.5.0
-        version: 0.5.0(@carloscortezcloud/sayay-guard@0.1.1)(@carloscortezcloud/styrr-llm@0.4.0)
+        specifier: ^0.6.0
+        version: 0.6.0(@carloscortezcloud/sayay-guard@0.1.1)(@carloscortezcloud/styrr-llm@0.4.0)
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
@@ -288,8 +288,8 @@ packages:
       '@carloscortezcloud/styrr-llm':
         optional: true
 
-  '@carloscortezcloud/tinkuy-agent@0.5.0':
-    resolution: {integrity: sha512-3mKcqvZDowvrO876+5RE59Xn6/cVy8y7kn28LV7uQE+InWJPUupb9X2XNT1gkOs65tEcFY5pBR6UmwdvXiVM/Q==}
+  '@carloscortezcloud/tinkuy-agent@0.6.0':
+    resolution: {integrity: sha512-WH33NsGwGW068z4oUzlH0jPY/Soev/t8pU2p9EkH4sNwqCOCoqNmN9qTQS3eGVGKjJdOihyxHg77QPm91FfUOA==}
     peerDependencies:
       '@carloscortezcloud/sayay-guard': '>=0.1.0'
       '@carloscortezcloud/styrr-llm': '>=0.1.0'
@@ -1282,7 +1282,7 @@ snapshots:
       '@carloscortezcloud/sayay-guard': 0.1.1
       '@carloscortezcloud/styrr-llm': 0.4.0
 
-  '@carloscortezcloud/tinkuy-agent@0.5.0(@carloscortezcloud/sayay-guard@0.1.1)(@carloscortezcloud/styrr-llm@0.4.0)':
+  '@carloscortezcloud/tinkuy-agent@0.6.0(@carloscortezcloud/sayay-guard@0.1.1)(@carloscortezcloud/styrr-llm@0.4.0)':
     dependencies:
       yaml: 2.9.0
     optionalDependencies:
