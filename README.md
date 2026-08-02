@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/license-Apache_2.0-3B82F6?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs">
   <img src="https://img.shields.io/badge/powered_by-Tinkuy-3B82F6?style=flat-square" alt="Tinkuy">
-  <img src="https://img.shields.io/badge/examples-3-success?style=flat-square" alt="3 examples">
+  <img src="https://img.shields.io/badge/examples-5-success?style=flat-square" alt="5 examples">
 </p>
 
 ---
@@ -33,6 +33,8 @@
 | [finops-agent](./finops-agent/) | AWS cost analysis with simulated data | `Agent.run()`, tools, guardrails, `onComplete` hook |
 | [finops-agent-advanced](./finops-agent-advanced/) | Auto-discovery models, RAG, real API, budget guards | `Agent.run()`, fallback chain, `onComplete` hook |
 | [finops-agent-streaming](./finops-agent-streaming/) | `Agent.stream()` with AG-UI events | `text_delta`, `tool_call_result`, `done` |
+| [deterministic-ontology-aws](./examples/deterministic-ontology-aws/) | TokenOps AWS reference: Step Functions + Lambda blueprints | ASL, ontology validator, CDK stack, 3 Lambda blueprints |
+| [sayay-styrr-agentcore](./examples/sayay-styrr-agentcore/) | Strands agent with Sayay budget + Styrr cross-provider on AgentCore | `checkOrThrow()` kill switch, `DynamoStorage`, fallback chain |
 
 ## Quick Start
 

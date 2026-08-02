@@ -1,0 +1,26 @@
+{
+  "name": "sayay-styrr-agentcore",
+  "version": "1.0.0",
+  "description": "Strands agent with Sayay budget guard + Styrr cross-provider fallback, wired for Bedrock AgentCore (Tokenops-003)",
+  "private": true,
+  "type": "module",
+  "main": "dist/handler.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/index.mjs",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@carloscortezcloud/sayay-guard": "^0.2.0",
+    "@carloscortezcloud/styrr-llm": "^0.5.0",
+    "@carloscortezcloud/styrr-strands": "^0.1.0",
+    "@strands-agents/sdk": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "tsx": "^4.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -1,23 +1,40 @@
 import { describe, it, expect, vi } from 'vitest';
+import { handler } from '../src/handler.js';
 import {
-  handler,
+  MemoryStorage,
+  DynamoStorage,
   TokenBudgetExceededException,
-  DynamoBudgetStorage,
-} from '../src/handler.js';
-import { MemoryStorage } from '@carloscortezcloud/sayay-guard';
+} from '@carloscortezcloud/sayay-guard';
 
-describe('DynamoBudgetStorage', () => {
+function mockDynamo() {
+  const store = new Map<string, number>();
+  const send = vi.fn(async (cmd: any) => {
+    const cmdName = cmd.constructor?.name || '';
+    const key = cmd?.input?.Key?.pk;
+    if (cmdName.includes('Get')) {
+      return { Item: key && store.has(key) ? { pk: key, value: store.get(key) } : undefined };
+    }
+    if (cmdName.includes('Update')) {
+      const amt = cmd.input.ExpressionAttributeValues[':amt'];
+      const next = (store.get(key) || 0) + amt;
+      store.set(key, next);
+      return { Attributes: { pk: key, value: next } };
+    }
+    return {};
+  });
+  return { send, store };
+}
+
+describe('DynamoStorage', () => {
   it('returns 0 for missing keys', async () => {
-    const send = vi.fn().mockResolvedValue({});
-    const storage = new DynamoBudgetStorage('budget-table', { send } as never);
+    const { send } = mockDynamo();
+    const storage = new DynamoStorage({ tableName: 'budget-table', client: { send } });
     await expect(storage.get('sayay:u1:daily:2026-01-01')).resolves.toBe(0);
   });
 
   it('increments and returns the new value', async () => {
-    const send = vi
-      .fn()
-      .mockResolvedValueOnce({ Attributes: { value: { N: '0.01' } } });
-    const storage = new DynamoBudgetStorage('budget-table', { send } as never);
+    const { send } = mockDynamo();
+    const storage = new DynamoStorage({ tableName: 'budget-table', client: { send } });
     await expect(storage.increment('sayay:u1:daily:2026-01-01', 0.01)).resolves.toBe(0.01);
     expect(send).toHaveBeenCalledOnce();
   });
