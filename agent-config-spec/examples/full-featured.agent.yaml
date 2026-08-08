@@ -1,0 +1,179 @@
+# Example: Full-featured agent config
+# Compatible with: tinkuy, strands, langgraph, openai-agents, crewai
+
+agent:
+  name: research-assistant
+  description: AI research assistant that finds, synthesizes, and cites sources
+  version: "1.2.0"
+  framework: tinkuy
+  tags: [research, multi-agent, production]
+
+models:
+  primary:
+    model: claude-sonnet-4-6
+    provider: anthropic
+    settings:
+      temperature: 0.3
+      maxTokens: 8192
+      maxTokensOutput: 4096
+  fallbacks:
+    - model: gpt-4o
+      provider: openai
+      settings:
+        temperature: 0.3
+        maxTokens: 8192
+    - model: gemini-2.5-flash
+      provider: google
+      settings:
+        temperature: 0.4
+        maxTokens: 8192
+  routing:
+    strategy: cost-optimized
+    modes:
+      cheap:
+        model: gemini-2.5-flash
+        provider: google
+      best:
+        model: claude-sonnet-4-6
+        provider: anthropic
+      balanced:
+        model: gpt-4o-mini
+        provider: openai
+    modelMapping:
+      claude-sonnet-4-6: gpt-4o
+      gpt-4o: gemini-2.5-pro
+
+budget:
+  enabled: true
+  currency: USD
+  limits:
+    perCall:
+      maxCostUsd: 0.50
+      maxTokens: 10000
+    perRun:
+      maxCostUsd: 5.00
+      maxTokens: 50000
+      maxCalls: 20
+    perDay:
+      maxCostUsd: 50.00
+    perMonth:
+      maxCostUsd: 500.00
+    perUser:
+      maxCostUsd: 10.00
+      maxCalls: 100
+  softThresholds: [0.7, 0.9]
+  onSoftExceeded: downgrade-model
+  onHardExceeded: reject
+  persistence:
+    backend: redis
+    connectionString: $REDIS_URL
+
+guardrails:
+  input:
+    - type: sayay-guard
+      enabled: true
+      onViolation: block
+      config:
+        promptInjection: true
+        jailbreak: true
+  output:
+    - type: hallucination-check
+      enabled: true
+      onViolation: warn
+  loopDetection:
+    enabled: true
+    maxIterations: 15
+    maxToolCalls: 30
+    maxConsecutiveSameTool: 3
+    onDetected: inject-message
+  pii:
+    enabled: true
+    mode: redact
+    entities: [email, phone, ssn, credit_card]
+
+tracing:
+  enabled: true
+  exporter: otel
+  endpoint: $OTEL_ENDPOINT
+  privacy: metadata-only
+  sampleRate: 1.0
+  spanKinds: [agent, llm_call, tool_call, retrieval, guardrail, reasoning]
+  resourceAttributes:
+    service.namespace: research
+    deployment.environment: production
+
+tools:
+  functions:
+    - name: web_search
+      description: Search the web for information
+      timeoutMs: 30000
+    - name: fetch_url
+      description: Fetch and extract content from a URL
+      timeoutMs: 15000
+    - name: save_note
+      description: Save a note to memory
+    - name: cite_source
+      description: Generate a citation for a source
+  mcp:
+    - name: browser
+      transport: stdio
+      command: npx
+      args: ["-y", "@anthropic-ai/mcp-browser"]
+    - name: filesystem
+      transport: stdio
+      command: npx
+      args: ["-y", "@anthropic-ai/mcp-filesystem"]
+  maxConcurrent: 5
+  toolChoice: auto
+
+memory:
+  shortTerm:
+    type: sliding-window
+    maxMessages: 50
+    maxTokens: 40000
+  longTerm:
+    enabled: true
+    backend: pinecone
+    namespace: research-assistant
+    embeddingModel: text-embedding-3-small
+    topK: 10
+  session:
+    enabled: true
+    backend: redis
+    ttl: "24h"
+
+orchestration:
+  mode: hierarchical
+  handoffs:
+    - agent: fact-checker
+      description: Verify factual claims
+      condition: "when claims need verification"
+    - agent: citation-manager
+      description: Manage bibliography and citations
+      condition: "when sources need citing"
+  maxAgents: 5
+  coordinator: research-assistant
+
+runtime:
+  timeoutMs: 300000
+  maxRetries: 3
+  retryBackoff: exponential
+  retryInitialDelayMs: 1000
+  retryMaxDelayMs: 30000
+  concurrency: 10
+  environment: production
+  secrets:
+    - name: ANTHROPIC_API_KEY
+      source: env
+      reference: ANTHROPIC_API_KEY
+    - name: OPENAI_API_KEY
+      source: aws-secrets-manager
+      reference: prod/openai/api-key
+
+extensions:
+  tinkuy:
+    orchestration:
+      coordinatorModel: claude-sonnet-4-6
+  strands:
+    systemPrompt: "You are a meticulous research assistant. Always cite sources."
+    sessionTtl: "48h"

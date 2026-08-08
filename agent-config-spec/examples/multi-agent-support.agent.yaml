@@ -1,0 +1,68 @@
+# Example: Multi-agent customer support
+# Shows orchestration, handoffs, and per-agent budgets
+
+agent:
+  name: support-triage
+  description: Customer support triage agent that routes to specialists
+  framework: langgraph
+  tags: [customer-support, multi-agent, production]
+
+models:
+  primary:
+    model: claude-sonnet-4-6
+    provider: anthropic
+    settings:
+      temperature: 0.5
+      maxTokens: 4096
+
+budget:
+  enabled: true
+  limits:
+    perRun:
+      maxCostUsd: 2.00
+    perDay:
+      maxCostUsd: 200.00
+    perTenant:
+      maxCostUsd: 2000.00
+  softThresholds: [0.8, 0.95]
+  onSoftExceeded: notify
+  onHardExceeded: halt
+
+guardrails:
+  input:
+    - type: toxicity-filter
+      onViolation: block
+  loopDetection:
+    maxIterations: 10
+    onDetected: escalate
+
+tracing:
+  enabled: true
+  exporter: otel
+  privacy: metadata-only
+  spanKinds: [agent, llm_call, tool_call, delegation]
+
+tools:
+  functions:
+    - name: lookup_order
+    - name: create_ticket
+    - name: check_refund_eligibility
+
+orchestration:
+  mode: hierarchical
+  handoffs:
+    - agent: billing-specialist
+      description: Handles billing and payment issues
+      condition: "billing, payment, charge, refund"
+    - agent: technical-support
+      description: Resolves technical problems
+      condition: "bug, error, crash, not working"
+    - agent: shipping-agent
+      description: Handles delivery and shipping queries
+      condition: "shipping, delivery, tracking, lost package"
+  coordinator: support-triage
+  maxAgents: 4
+
+runtime:
+  environment: production
+  timeoutMs: 120000

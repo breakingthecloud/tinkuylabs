@@ -1,0 +1,58 @@
+{
+  "name": "@agentconfig/spec",
+  "version": "1.0.0",
+  "description": "Universal Agent Config Specification — framework-agnostic declarative config for AI agents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "agent-config": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./adapters": {
+      "import": "./dist/adapters.js",
+      "types": "./dist/adapters.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "types": "./dist/types.d.ts"
+    },
+    "./schema": "./schemas/v1/agent.config.schema.json"
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "examples"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test",
+    "cli": "node --import tsx ./src/cli.ts"
+  },
+  "keywords": [
+    "ai-agents",
+    "agent-config",
+    "llm",
+    "framework-agnostic",
+    "strands",
+    "langgraph",
+    "openai-agents",
+    "crewai",
+    "tinkuy"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,481 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentconfig.dev/schemas/v1/agent.config.schema.json",
+  "title": "Agent Config Specification v1",
+  "description": "Universal, framework-agnostic configuration for AI agents. Declarative spec that adapters translate to native framework configs.",
+  "type": "object",
+  "required": ["agent", "models"],
+  "properties": {
+    "agent": {
+      "$ref": "#/$defs/agent"
+    },
+    "models": {
+      "$ref": "#/$defs/models"
+    },
+    "budget": {
+      "$ref": "#/$defs/budget"
+    },
+    "guardrails": {
+      "$ref": "#/$defs/guardrails"
+    },
+    "tracing": {
+      "$ref": "#/$defs/tracing"
+    },
+    "tools": {
+      "$ref": "#/$defs/tools"
+    },
+    "memory": {
+      "$ref": "#/$defs/memory"
+    },
+    "orchestration": {
+      "$ref": "#/$defs/orchestration"
+    },
+    "runtime": {
+      "$ref": "#/$defs/runtime"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Framework-specific overrides. Keys are framework IDs (tinkuy, strands, langgraph, openai-agents, crewai, pydantic-ai).",
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  },
+  "$defs": {
+    "agent": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique agent identifier"
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "default": "1.0.0"
+        },
+        "framework": {
+          "type": "string",
+          "enum": ["tinkuy", "strands", "langgraph", "openai-agents", "crewai", "pydantic-ai", "autogen", "llamaindex", "vercel-ai", "custom"],
+          "description": "Target framework for this config"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "required": ["primary"],
+      "properties": {
+        "primary": {
+          "$ref": "#/$defs/modelConfig"
+        },
+        "fallbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/modelConfig"
+          },
+          "description": "Ordered list of fallback models"
+        },
+        "routing": {
+          "$ref": "#/$defs/routingConfig"
+        }
+      }
+    },
+    "modelConfig": {
+      "type": "object",
+      "required": ["model"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "description": "Model identifier (e.g., claude-sonnet-4-6, gpt-4o-mini)"
+        },
+        "provider": {
+          "type": "string",
+          "enum": ["openai", "anthropic", "google", "azure", "bedrock", "ollama", "groq", "mistral", "together", "openrouter", "custom"],
+          "description": "Model provider"
+        },
+        "baseUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "apiKey": {
+          "type": "string",
+          "description": "API key or env var reference (e.g., $OPENAI_API_KEY)"
+        },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+            "topP": { "type": "number", "minimum": 0, "maximum": 1 },
+            "maxTokens": { "type": "integer", "minimum": 1 },
+            "maxTokensInput": { "type": "integer", "minimum": 1 },
+            "maxTokensOutput": { "type": "integer", "minimum": 1 },
+            "frequencyPenalty": { "type": "number" },
+            "presencePenalty": { "type": "number" },
+            "seed": { "type": "integer" },
+            "stopSequences": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    },
+    "routingConfig": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["priority", "cost-optimized", "latency-optimized", "round-robin", "failover"],
+          "default": "priority"
+        },
+        "modes": {
+          "type": "object",
+          "description": "Named routing modes (cheap, balanced, best, private)",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "model": { "type": "string" },
+              "provider": { "type": "string" }
+            }
+          }
+        },
+        "modelMapping": {
+          "type": "object",
+          "description": "Map model names across providers for failover compatibility",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "currency": { "type": "string", "default": "USD" },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "perCall": { "$ref": "#/$defs/budgetLimit" },
+            "perRun": { "$ref": "#/$defs/budgetLimit" },
+            "perSession": { "$ref": "#/$defs/budgetLimit" },
+            "perDay": { "$ref": "#/$defs/budgetLimit" },
+            "perMonth": { "$ref": "#/$defs/budgetLimit" },
+            "perUser": { "$ref": "#/$defs/budgetLimit" },
+            "perTenant": { "$ref": "#/$defs/budgetLimit" }
+          }
+        },
+        "softThresholds": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0, "maximum": 1 },
+          "description": "Percentage thresholds for warnings (e.g., [0.7, 0.9])"
+        },
+        "onSoftExceeded": {
+          "type": "string",
+          "enum": ["log", "downgrade-model", "reduce-capabilities", "notify"],
+          "default": "log"
+        },
+        "onHardExceeded": {
+          "type": "string",
+          "enum": ["reject", "halt", "downgrade-model", "notify"],
+          "default": "reject"
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "backend": { "type": "string", "enum": ["memory", "redis", "sqlite", "postgres"] },
+            "connectionString": { "type": "string" }
+          }
+        }
+      }
+    },
+    "budgetLimit": {
+      "type": "object",
+      "properties": {
+        "maxCostUsd": { "type": "number", "minimum": 0 },
+        "maxTokens": { "type": "integer", "minimum": 0 },
+        "maxCalls": { "type": "integer", "minimum": 0 },
+        "maxRetries": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "guardrails": {
+      "type": "object",
+      "properties": {
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/guardrailConfig"
+          }
+        },
+        "output": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/guardrailConfig"
+          }
+        },
+        "loopDetection": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "maxIterations": { "type": "integer", "minimum": 1 },
+            "maxToolCalls": { "type": "integer", "minimum": 1 },
+            "maxConsecutiveSameTool": { "type": "integer", "minimum": 1 },
+            "onDetected": {
+              "type": "string",
+              "enum": ["halt", "notify", "inject-message", "escalate"],
+              "default": "halt"
+            }
+          }
+        },
+        "pii": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "mode": { "type": "string", "enum": ["detect", "redact", "block"], "default": "detect" },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["email", "phone", "ssn", "credit_card", "ip_address", "name", "address", "date_of_birth", "passport", "medical"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "guardrailConfig": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Guardrail type identifier (e.g., sayay-guard, custom-judge, moderation)"
+        },
+        "enabled": { "type": "boolean", "default": true },
+        "onViolation": {
+          "type": "string",
+          "enum": ["block", "warn", "redact", "escalate"],
+          "default": "block"
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Guardrail-specific configuration"
+        }
+      }
+    },
+    "tracing": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "exporter": {
+          "type": "string",
+          "enum": ["otel", "console", "file", "datadog", "braintrust", "langfuse", "langsmith", "arize-phoenix", "custom"],
+          "default": "otel"
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "privacy": {
+          "type": "string",
+          "enum": ["none", "metadata-only", "full"],
+          "default": "metadata-only"
+        },
+        "sampleRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "spanKinds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["agent", "llm_call", "tool_call", "planning", "reasoning", "retrieval", "guardrail", "delegation", "memory"]
+          },
+          "default": ["agent", "llm_call", "tool_call"]
+        },
+        "resourceAttributes": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "tools": {
+      "type": "object",
+      "properties": {
+        "functions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "enabled": { "type": "boolean", "default": true },
+              "timeoutMs": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "mcp": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "transport"],
+            "properties": {
+              "name": { "type": "string" },
+              "transport": {
+                "type": "string",
+                "enum": ["stdio", "sse", "streamable-http"]
+              },
+              "command": { "type": "string" },
+              "args": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "url": { "type": "string", "format": "uri" },
+              "headers": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "enabled": { "type": "boolean", "default": true }
+            }
+          }
+        },
+        "maxConcurrent": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 5
+        },
+        "toolChoice": {
+          "type": "string",
+          "enum": ["auto", "required", "none"],
+          "default": "auto"
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "properties": {
+        "shortTerm": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["sliding-window", "summary", "full"],
+              "default": "sliding-window"
+            },
+            "maxMessages": { "type": "integer", "minimum": 1 },
+            "maxTokens": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "longTerm": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "backend": {
+              "type": "string",
+              "enum": ["pinecone", "qdrant", "weaviate", "chroma", "milvus", "redis", "postgres", "memory", "custom"]
+            },
+            "connectionString": { "type": "string" },
+            "namespace": { "type": "string" },
+            "embeddingModel": { "type": "string" },
+            "topK": { "type": "integer", "minimum": 1, "default": 5 }
+          }
+        },
+        "session": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "backend": {
+              "type": "string",
+              "enum": ["memory", "redis", "sqlite", "postgres", "dynamodb"]
+            },
+            "ttl": { "type": "string", "description": "Session TTL (e.g., '24h', '7d')" }
+          }
+        }
+      }
+    },
+    "orchestration": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["single", "sequential", "hierarchical", "swarm", "graph"],
+          "default": "single"
+        },
+        "handoffs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["agent"],
+            "properties": {
+              "agent": { "type": "string", "description": "Target agent name" },
+              "description": { "type": "string" },
+              "condition": { "type": "string", "description": "When to handoff (natural language or expression)" }
+            }
+          }
+        },
+        "maxAgents": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 10
+        },
+        "coordinator": {
+          "type": "string",
+          "description": "Coordinator agent name for hierarchical/swarm modes"
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "properties": {
+        "timeoutMs": { "type": "integer", "minimum": 0 },
+        "maxRetries": { "type": "integer", "minimum": 0, "default": 2 },
+        "retryBackoff": {
+          "type": "string",
+          "enum": ["fixed", "linear", "exponential"],
+          "default": "exponential"
+        },
+        "retryInitialDelayMs": { "type": "integer", "minimum": 0, "default": 1000 },
+        "retryMaxDelayMs": { "type": "integer", "minimum": 0, "default": 30000 },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 10
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["development", "staging", "production"],
+          "default": "development"
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "source": {
+                "type": "string",
+                "enum": ["env", "file", "aws-secrets-manager", "gcp-secret-manager", "azure-keyvault", "vault"]
+              },
+              "reference": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
