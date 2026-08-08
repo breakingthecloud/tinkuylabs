@@ -30,5 +30,3 @@ pnpm-debug.log*
 
 # Old lock files (repo now uses pnpm-lock.yaml at root)
 package-lock.json
-# Except for npm sub-packages (negation must come after)
-!agent-config-spec/package-lock.json

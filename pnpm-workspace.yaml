@@ -5,6 +5,7 @@ packages:
   - "examples/deterministic-ontology-aws/lambdas/*"
   - "examples/deterministic-ontology-aws/cdk"
   - "examples/sayay-styrr-agentcore"
+  - "agent-config-spec"
 minimumReleaseAge: 0
 allowBuilds:
   esbuild: true
